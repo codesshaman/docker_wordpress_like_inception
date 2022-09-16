@@ -3,6 +3,10 @@ all:
 	@printf "Launch configuration ${name}...\n"
 	@docker-compose -f ./docker-compose.yml up -d
 
+build:
+	@printf "Build configuration ${name}...\n"
+	@docker-compose -f ./docker-compose.yml up -d --build
+
 down:
 	@printf "Stopping configuration ${name}...\n"
 	@docker-compose -f ./docker-compose.yml down
