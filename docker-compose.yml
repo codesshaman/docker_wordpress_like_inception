@@ -11,27 +11,10 @@ services:
     ports:
       - "443:443"
     volumes:
-      - ./nginx/conf:/etc/nginx/http.d
+      - ./nginx/conf/:/etc/nginx/http.d/
       - ./nginx/tools:/etc/nginx/ssl/
-      - ./logs:/var/log/nginx/
-      - wp-volume:/var/www/
+      - wp_volume:/var/www/
     restart: unless-stopped
-
-  wordpress:
-    build:
-      context: .
-      dockerfile: wordpress/Dockerfile
-      args:
-       DB_NAME: ${DB_NAME}
-       DB_USER: ${DB_USER}
-       DB_PASS: ${DB_PASS}
-    depends_on:
-      - mariadb
-    restart: unless-stopped
-    volumes:
-      - ./wordpress/conf:/mnt/
-      - wp-volume:/var/www/
-    container_name: wordpress
 
   mariadb:
     build:
@@ -48,9 +31,24 @@ services:
       - "./mariadb/conf/:/mnt/"
     restart: unless-stopped
 
+  wordpress:
+    build:
+      context: .
+      dockerfile: wordpress/Dockerfile
+      args:
+        DB_NAME: ${DB_NAME}
+        DB_USER: ${DB_USER}
+        DB_PASS: ${DB_PASS}
+    depends_on:
+      - mariadb
+    restart: unless-stopped
+    volumes:
+      - wp_volume:/var/www/
+    container_name: wordpress
+
 volumes:
-  wp-volume:
+  wp_volume:
     driver_opts:
       o: bind
       type: none
-      device: /home/${USER}/Шаблоны/Docker/wordpress
+      device: /home/${USER}/wordpress
