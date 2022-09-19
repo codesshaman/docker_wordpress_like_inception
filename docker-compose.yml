@@ -6,40 +6,47 @@ services:
       context: .
       dockerfile: nginx/Dockerfile
     container_name: nginx
+    depends_on:
+      - wordpress
     ports:
       - "443:443"
     volumes:
-      - ./nginx/conf/:/etc/nginx/conf.d/
-      - ./nginx/ssl:/etc/nginx/ssl/
+      - ./nginx/conf:/etc/nginx/http.d
+      - ./nginx/tools:/etc/nginx/ssl/
+      - ./logs:/var/log/nginx/
       - wp-volume:/var/www/
     restart: unless-stopped
+
+  wordpress:
+    build:
+      context: .
+      dockerfile: wordpress/Dockerfile
+      args:
+       DB_NAME: ${DB_NAME}
+       DB_USER: ${DB_USER}
+       DB_PASS: ${DB_PASS}
+    depends_on:
+      - mariadb
+    restart: unless-stopped
+    volumes:
+      - ./wordpress/conf:/mnt/
+      - wp-volume:/var/www/
+    container_name: wordpress
 
   mariadb:
     build:
       context: .
       dockerfile: mariadb/Dockerfile
+      args:
+        DB_NAME: ${DB_NAME}
+        DB_USER: ${DB_USER}
+        DB_PASS: ${DB_PASS}
     container_name: mariadb
     ports:
       - "3306:3306"
     volumes:
       - "./mariadb/conf/:/mnt/"
     restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PWD:   ${MYSQL_ROOT_PASSWORD}
-      WP_DATABASE_NAME: "wordpress"
-      WP_DATABASE_USR:  ${MYSQL_USER}
-      WP_DATABASE_PWD:  ${MYSQL_PASSWORD}
-
-  wordpress:
-    build:
-      context: .
-      dockerfile: wordpress/Dockerfile
-    depends_on:
-      - mariadb
-    restart: unless-stopped
-    volumes:
-      - wp-volume:/var/www/
-    container_name: wordpress
 
 volumes:
   wp-volume:
