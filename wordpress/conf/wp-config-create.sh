@@ -13,6 +13,7 @@ define( 'DB_COLLATE', '' );
 define('WP_MEMORY_LIMIT', '64M');
 \$table_prefix = 'wp_';
 define( 'WP_DEBUG', true );
+define( 'FS_METHOD', 'direct' );
 if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', __DIR__ . '/' );
 }
