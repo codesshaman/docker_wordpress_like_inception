@@ -19,6 +19,7 @@ re:
 clean: down
 	@printf "Cleaning configuration ${name}...\n"
 	@docker system prune -a
+	@sudo rm -rf ~/wordpress/*
 
 fclean:
 	@printf "Total clean of all configurations docker\n"
