@@ -14,7 +14,7 @@ services:
       - ./nginx/conf/:/etc/nginx/http.d/
       - ./nginx/tools:/etc/nginx/ssl/
       - wp_volume:/var/www/
-    restart: unless-stopped
+    restart: on-failure
 
   mariadb:
     build:
@@ -29,7 +29,7 @@ services:
       - "3306:3306"
     volumes:
       - "./mariadb/conf/:/mnt/"
-    restart: unless-stopped
+    restart: on-failure
 
   wordpress:
     build:
@@ -41,10 +41,10 @@ services:
         DB_PASS: ${DB_PASS}
     depends_on:
       - mariadb
-    restart: unless-stopped
     volumes:
       - wp_volume:/var/www/
     container_name: wordpress
+    restart: on-failure
 
 volumes:
   wp_volume:
