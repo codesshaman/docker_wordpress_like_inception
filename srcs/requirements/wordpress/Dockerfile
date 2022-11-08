@@ -1,8 +1,8 @@
-FROM alpine:latest
-ARG PHP_VERSION=8
-ARG DB_NAME
-ARG DB_USER
-ARG DB_PASS
+FROM alpine:3.16
+ARG PHP_VERSION=8 \
+    DB_NAME \
+    DB_USER \
+    DB_PASS
 RUN apk update && apk upgrade && apk add --no-cache \
     php${PHP_VERSION} \
     php${PHP_VERSION}-fpm \
@@ -16,6 +16,7 @@ RUN apk update && apk upgrade && apk add --no-cache \
     php${PHP_VERSION}-openssl \
     php${PHP_VERSION}-xml \
     php${PHP_VERSION}-zip \
+    php${PHP_VERSION}-redis \
     wget \
     unzip && \
     sed -i "s|listen = 127.0.0.1:9000|listen = 9000|g" \
@@ -30,7 +31,7 @@ RUN wget https://wordpress.org/latest.zip && \
     unzip latest.zip && \
     cp -rf wordpress/* . && \
     rm -rf wordpress latest.zip
-COPY ./wordpress/conf/wp-config-create.sh .
-RUN sh wp-config-create.sh && rm wp-config-create.sh
-EXPOSE 9000
+COPY ./requirements/wordpress/conf/wp-config-create.sh .
+RUN sh wp-config-create.sh && rm wp-config-create.sh && \
+    chmod -R 0777 wp-content/
 CMD ["/usr/sbin/php-fpm8", "-F"]
